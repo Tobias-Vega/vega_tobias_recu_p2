@@ -32,16 +32,8 @@ app.post('/students', (req,res) => {
 
     let { fullName, age, curse } = req.body
 
-    fullName = fullName.trim()
-    age = parseInt(age)
-    curse = curse.trim()
-
-    if(Number.isNaN(age)) {
-        return res.status(400).send('El año debe ser un número')
-    }
-
-    if(age < 0 || age < 6) {
-        return res.status(400).send('Ingrese un año válido para la edad de un estudiante')
+    if(typeof fullName != "string" || typeof curse != "string") {
+        return res.status(400).send('El nombre o el curso deben ser texto')
     }
 
     if(!fullName || !age || !curse) {
@@ -52,6 +44,18 @@ app.post('/students', (req,res) => {
 
     if(repeatName) {
         return res.status(401).send('Ya existe un estudiante con dicho nombre')
+    }
+
+    fullName = fullName.trim()
+    age = parseInt(age)
+    curse = curse.trim()
+
+    if(Number.isNaN(age)) {
+        return res.status(400).send('El año debe ser un número')
+    }
+
+    if(age < 0 || age < 6) {
+        return res.status(400).send('Ingrese un año válido para la edad de un estudiante')
     }
 
     students.push({
@@ -70,7 +74,7 @@ app.put('/students/:id', (req,res) => {
 
     const { fullName, age, curse } = req.body
 
-    if(Number.isNaN(age)) {
+    if(typeof age === "string") {
         return res.status(400).send('El año debe ser un número')
     }
 
@@ -78,10 +82,24 @@ app.put('/students/:id', (req,res) => {
         return res.status(400).send('Ingrese un año válido para la edad de un estudiante')
     }
 
+    if(typeof fullName != "string" || typeof curse != "string") {
+        return res.status(400).send('El nombre o el curso deben ser texto')
+    }
+
+    if(!fullName || !age || !curse) {
+        return res.status(400).send('Faltan completar datos')
+    }
+
     const studentIndex = students.findIndex((student) => student.id === id)
 
     if(studentIndex === -1) {
         return res.status(204).send()
+    }
+
+    const repeatName = students.find((student) => student.fullName === fullName)
+
+    if(repeatName) {
+        return res.status(401).send('Ya existe un estudiante con dicho nombre')
     }
 
     students[studentIndex].fullName = fullName.trim()
