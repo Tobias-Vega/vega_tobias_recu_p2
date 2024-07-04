@@ -65,14 +65,43 @@ app.post('/students', (req,res) => {
 
 })
 
-app.put('/students', (req,res) => {
+app.put('/students/:id', (req,res) => {
+    const id = parseInt(req.params.id)
 
+    const { fullName, age, curse } = req.body
+
+    if(Number.isNaN(age)) {
+        return res.status(400).send('El año debe ser un número')
+    }
+
+    if(age < 0 || age < 6 || age > 65) {
+        return res.status(400).send('Ingrese un año válido para la edad de un estudiante')
+    }
+
+    const studentIndex = students.findIndex((student) => student.id === id)
+
+    if(studentIndex === -1) {
+        return res.status(204).send()
+    }
+
+    students[studentIndex].fullName = fullName.trim()
+    students[studentIndex].age = parseInt(age)
+    students[studentIndex].curse = curse.trim()
+
+    res.send('Datos del estudiante actualizados')
 })
 
-app.delete('/students', (req,res) => {
+app.delete('/students/:id', (req,res) => {
+    const id = parseInt(req.params.id)
 
+    const studentIndex = students.findIndex((student) => student.id === id)
+
+    if(studentIndex === -1) {
+        return res.status(204).send()
+    } else {
+        students.splice(studentIndex, 1)
+        res.send('Datos del estudiante eliminado')
+    }
 })
-
-
 
 app.listen(4321, () => console.log('Servidor corriendo en el puerto 4321'))
