@@ -16,7 +16,15 @@ app.get('/students', (req,res) => {
 })
 
 app.get('/students/:id', (req,res) => {
+    const id = parseInt(req.params.id)
 
+    const getStudent = students.find((student) => student.id === id)
+
+    if(!getStudent) {
+        return res.status(204).send()
+    }
+
+    res.json(getStudent)
 })
 
 app.post('/students', (req,res) => {
